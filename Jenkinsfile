@@ -25,7 +25,7 @@ pipeline {
                         # Import the Active Directory module if it's not already imported
                         Import-Module ActiveDirectory
 
-                        # Define user properties
+                        # Fetch user details
                         `$user = Get-ADUser -Identity `$username -Properties DisplayName, EmailAddress
 
                         # Get group membership
@@ -51,19 +51,20 @@ pipeline {
                         `$output | ConvertTo-Json
                     """
 
-                    bat """
-                        echo ${script} > script.ps1
-                    """
+                    // Write the PowerShell script to a file
+                    writeFile file: 'script.ps1', text: script
 
-                    powershell(
-                        script: """
-                            \$username = "${username}"
-                            \$password = "${env.WINRM_PASSWORD}" | ConvertTo-SecureString -AsPlainText -Force
-                            \$credential = New-Object System.Management.Automation.PSCredential("${env.WINRM_USER}", \$password)
-                            Invoke-Command -ComputerName "${env.WINRM_HOST}" -Port ${env.WINRM_PORT} -Credential \$credential -FilePath "script.ps1"
-                        """,
-                        label: "Running PowerShell Script on Windows VM"
-                    )
+                    // Run the PowerShell script on the Windows VM using WinRM
+                    def output = powershell(returnStdout: true, script: """
+                        \$username = "${username}"
+                        \$password = "${env.WINRM_PASSWORD}" | ConvertTo-SecureString -AsPlainText -Force
+                        \$credential = New-Object System.Management.Automation.PSCredential("${env.WINRM_USER}", \$password)
+                        Invoke-Command -ComputerName "${env.WINRM_HOST}" -Port ${env.WINRM_PORT} -Credential \$credential -FilePath "script.ps1"
+                    """)
+
+                    // Parse the JSON output from the PowerShell script
+                    def json = readJSON text: output
+                    echo "User Details: ${json}"
                 }
             }
         }
