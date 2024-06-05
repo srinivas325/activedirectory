@@ -15,9 +15,9 @@ pipeline {
     stages {
         stage('Run PowerShell Script on Windows VM') {
            steps {
-               script {
-                   New-ADUser -Name "testuser"                 
-        }
+               powershell '''
+                   New-ADUser -Name "testuser" 3
+                   '''   
     }
 }
     }
