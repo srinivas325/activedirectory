@@ -11,6 +11,9 @@ pipeline {
                     // Initialize winRMOperations
                     def winRMOperations = [] // Initialize or obtain this list as required
 
+                     // Define the PowerShell command to execute
+                    def command = 'Get-Process'
+
                     // Call winRMClient with correct named parameters
                     winRMClient(
                         hostName: "${env.HOST_NAME}",
