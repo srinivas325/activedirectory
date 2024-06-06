@@ -19,7 +19,7 @@ pipeline {
                     ]
                     
                     // Execute PowerShell command on the Windows server
-                    sh "winrm -r:http://${windowsServer.host} -u ${windowsServer.user} -p ${windowsServer.password} powershell '${powershellCommand}'"
+                    sh "winrm -hostname ${windowsServer.host} -username ${windowsServer.user} -password ${windowsServer.password} powershell '${powershellCommand}'"
                 }
             }
         }
