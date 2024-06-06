@@ -13,7 +13,7 @@ pipeline {
                     
                     // Define the target Windows server details
                     def windowsServer = [
-                        name: 'Windows Server', // Name for reference in Jenkins configuration
+                        name: 'ServerCore', // Name for reference in Jenkins configuration
                         host: '192.168.100.5', // IP address or hostname of the Windows server
                         credentialsId: 'win-ad-vm' // Jenkins credentials ID for SSH authentication
                     ]
