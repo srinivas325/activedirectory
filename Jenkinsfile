@@ -14,7 +14,10 @@ pipeline {
                     remote.allowAnyHosts = true
 
                     // Copy the PowerShell script to the remote server
-                    sshPut remote: remote, from: 'ad-ps.ps1', into: 'C:\\Users\\vboxuser\\ad-ps.ps1'
+                    sshPut remote: remote, from: 'ad-ps.ps1', into: 'C:\\Users\\vboxuser\\'
+
+                     // Verify the script is copied
+                    sshCommand remote: remote, command: "dir C:\\Users\\vboxuser\\"
 
                     // Execute the PowerShell script on the remote server
                     sshCommand remote: remote, command: 'powershell.exe -File C:\\Users\\vboxuser\\ad-ps.ps1'
