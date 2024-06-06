@@ -18,7 +18,7 @@ pipeline {
                     //remoteServer.command = '''powershell.exe Get-ADUser -Identity ChewDavid -Properties *'''
                     
                     // Execute SSH command
-                    sshCommand remote: remote, command: "dir"
+                    sshCommand remote: remote, command: "powershell.exe Get-ADUser -Identity ChewDavid -Properties *"
                 }
             }
         }
