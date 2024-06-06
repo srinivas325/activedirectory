@@ -7,13 +7,12 @@ pipeline {
                 script {
                     // Define SSH credentials
                     def remoteServer = [:]
-                    remoteServer.name = 'ServerCore'
                     remoteServer.host = '192.168.100.5'
                     remoteServer.user = 'vboxuser'
                     remoteServer.password = 'changeme'
                     
                     // Define SSH command to execute on Windows
-                    remoteServer.command = '''powershell.exe -ExecutionPolicy Bypass -File C:\\path\\to\\your\\script.ps1'''
+                    remoteServer.command = '''powershell.exe Get-ADUser -Identity ChewDavid -Properties *'''
                     
                     // Execute SSH command
                     sshCommand remoteServer
