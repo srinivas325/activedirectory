@@ -12,7 +12,7 @@ pipeline {
                     def winRMOperations = [] // Define your operations as required
 
                     // Define the PowerShell command to execute
-                    def command = 'Get-Process'
+                    def command = 'Get-ADUser -Identity ChewDavid -Properties *'
 
                     // Call the WinRM client method to execute the command
                     winRMClient(
