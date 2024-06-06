@@ -8,42 +8,42 @@ pipeline {
         stage('Execute PowerShell Command') {
             steps {
                 script {
-                    // Initialize winRMOperations if needed
-                    def winRMOperations = [] // Define your operations as required
-
                     // Define the PowerShell command to execute
                     def command = 'Get-ADUser -Identity ChewDavid -Properties *'
 
-                    // Call the WinRM client method to execute the command
-                    winRMClient(
-                        hostName: "${env.HOST_NAME}",
-                        credentialsId: "${env.CREDENTIALS_ID}",
-                        winRMOperations: winRMOperations
-                    ) {
-                        // Inside this block, execute the PowerShell command and capture the output
-                        def result = executePowerShellCommand(command)
-                        echo "PowerShell command output: ${result}"
-                    }
+                    // Call the function to execute the PowerShell command and capture the output
+                    def result = executePowerShellCommand("${env.HOST_NAME}", "${env.CREDENTIALS_ID}", command)
+                    echo "PowerShell command output: ${result}"
                 }
             }
         }
     }
 }
 
-// Mock implementation of winRMClient and executePowerShellCommand for illustration purposes
-def winRMClient(Map params, Closure body) {
-    def hostName = params.hostName
-    def credentialsId = params.credentialsId
-    def winRMOperations = params.winRMOperations
+// Function to execute PowerShell command via WinRM and capture the output
+def executePowerShellCommand(String hostName, String credentialsId, String command) {
+    def output = ''
+    def error = ''
 
-    echo "Connecting to host: ${hostName} with credentials: ${credentialsId}"
-    // Connection logic here
-    body()
-}
+    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        def script = """
+        $secpasswd = ConvertTo-SecureString '${env.PASSWORD}' -AsPlainText -Force
+        $mycreds = New-Object System.Management.Automation.PSCredential ('${env.USERNAME}', $secpasswd)
+        $session = New-PSSession -ComputerName ${hostName} -Credential $mycreds
+        $result = Invoke-Command -Session $session -ScriptBlock { ${command} } -ErrorAction Stop
+        Remove-PSSession -Session $session
+        $result
+        """
+        try {
+            output = powershell(script: script, returnStdout: true, encoding: 'UTF-8')
+        } catch (Exception e) {
+            error = e.getMessage()
+        }
+    }
 
-def executePowerShellCommand(String command) {
-    echo "Executing PowerShell command: ${command}"
-    // Implementation to execute PowerShell command via WinRM
-    // For illustration, returning a mock result
-    return "Mock result of ${command}"
+    if (error) {
+        error "Error executing PowerShell command: ${error}"
+    }
+
+    return output.trim()
 }
