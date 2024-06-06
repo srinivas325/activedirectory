@@ -19,7 +19,11 @@ pipeline {
                         hostName: "${env.HOST_NAME}",
                         credentialsId: "${env.CREDENTIALS_ID}",
                         winRMOperations: winRMOperations
-                    )
+                    ) {
+                        // Inside this block, execute the PowerShell command and capture the output
+                        def result = executePowerShellCommand(command)
+                        echo "PowerShell command output: ${result}"
+                    }
                 }
             }
         }
