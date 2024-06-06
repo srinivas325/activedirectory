@@ -27,12 +27,12 @@ def executePowerShellCommand(String hostName, String credentialsId, String comma
 
     withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
         def script = """
-        $secpasswd = ConvertTo-SecureString '${env.PASSWORD}' -AsPlainText -Force
-        $mycreds = New-Object System.Management.Automation.PSCredential ('${env.USERNAME}', $secpasswd)
-        $session = New-PSSession -ComputerName ${hostName} -Credential $mycreds
-        $result = Invoke-Command -Session $session -ScriptBlock { ${command} } -ErrorAction Stop
-        Remove-PSSession -Session $session
-        $result
+        \$secpasswd = ConvertTo-SecureString '${env.PASSWORD}' -AsPlainText -Force
+        \$mycreds = New-Object System.Management.Automation.PSCredential ('${env.USERNAME}', \$secpasswd)
+        \$session = New-PSSession -ComputerName ${hostName} -Credential \$mycreds
+        \$result = Invoke-Command -Session \$session -ScriptBlock { ${command} } -ErrorAction Stop
+        Remove-PSSession -Session \$session
+        \$result
         """
         try {
             output = powershell(script: script, returnStdout: true, encoding: 'UTF-8')
