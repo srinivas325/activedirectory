@@ -1,49 +1,43 @@
 pipeline {
     agent any
-    environment {
-        HOST_NAME = 'ServerCore' // Replace with your actual host name
-        CREDENTIALS_ID = 'win-ad-vm' // Replace with your actual credentials ID
-    }
+    
     stages {
+        stage('Connect to Windows Server') {
+            steps {
+                script {
+                    // Define SSH credentials
+                    def sshCredentials = [
+                        $class: 'UsernamePasswordCredentialsBinding',
+                        credentialsId: 'win-ad-vm',
+                        usernameVariable: 'SSH_USERNAME',
+                        passwordVariable: 'SSH_PASSWORD'
+                    ]
+
+                    // Define SSH command
+                    def sshCommand = "ssh ${sshCredentials.usernameVariable}:${sshCredentials.passwordVariable}@192.168.100.5"
+
+                    // Execute SSH command
+                    def sshResult = bat(script: sshCommand, returnStdout: true)
+
+                    // Print SSH result
+                    echo "SSH result: ${sshResult}"
+                }
+            }
+        }
         stage('Execute PowerShell Command') {
             steps {
                 script {
-                    // Define the PowerShell command to execute
-                    def command = 'Get-ADUser -Identity ChewDavid -Properties *'
+                    // Define PowerShell command
+                    def powerShellCommand = 'Your PowerShell command here'
 
-                    // Call the function to execute the PowerShell command and capture the output
-                    def result = executePowerShellCommand("${env.HOST_NAME}", "${env.CREDENTIALS_ID}", command)
-                    echo "PowerShell command output: ${result}"
+                    // Execute PowerShell command remotely via SSH
+                    def sshPowerShellCommand = "powershell.exe -command \"${powerShellCommand}\""
+                    def sshPowerShellResult = bat(script: sshPowerShellCommand, returnStdout: true)
+
+                    // Print PowerShell command result
+                    echo "PowerShell result: ${sshPowerShellResult}"
                 }
             }
         }
     }
-}
-
-// Function to execute PowerShell command via WinRM and capture the output
-def executePowerShellCommand(String hostName, String credentialsId, String command) {
-    def output = ''
-    def error = ''
-
-    withCredentials([usernamePassword(credentialsId: credentialsId, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-        def script = """
-        \$secpasswd = ConvertTo-SecureString '${env.PASSWORD}' -AsPlainText -Force
-        \$mycreds = New-Object System.Management.Automation.PSCredential ('${env.USERNAME}', \$secpasswd)
-        \$session = New-PSSession -ComputerName ${hostName} -Credential \$mycreds
-        \$result = Invoke-Command -Session \$session -ScriptBlock { ${command} } -ErrorAction Stop
-        Remove-PSSession -Session \$session
-        \$result
-        """
-        try {
-            output = powershell(script: script, returnStdout: true, encoding: 'UTF-8')
-        } catch (Exception e) {
-            error = e.getMessage()
-        }
-    }
-
-    if (error) {
-        error "Error executing PowerShell command: ${error}"
-    }
-
-    return output.trim()
 }
