@@ -11,27 +11,13 @@ pipeline {
                         # Add more PowerShell commands here
                     '''
                     
-                    // Define the target Windows server details
+                    // Define the target Windows server SSH remote host
                     def windowsServer = [
-                        name: 'win-ssh-server', // Name for reference in Jenkins configuration
-                        host: '192.168.100.5', // IP address or hostname of the Windows server
-                        credentialsId: '192.168.100.5' // Jenkins credentials ID for SSH authentication
+                        name: '192.168.100.5' // Name for reference in Jenkins configuration
                     ]
                     
-                    // Execute PowerShell command on the Windows server using SSH plugin
-                    sshPublisher(
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: windowsServer.name,
-                                transfers: [
-                                    sshTransfer(
-                                        execCommand: "powershell.exe -Command '${powershellCommand}'"
-                                    )
-                                ]
-                            )
-                        ],
-                        continueOnError: false
-                    )
+                    // Execute PowerShell command on the Windows server using SSH remote host
+                    sshCommand remote: windowsServer.name, command: "powershell.exe -Command '${powershellCommand}'"
                 }
             }
         }
