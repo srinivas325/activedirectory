@@ -1,32 +1,29 @@
 pipeline {
     agent any
-
-    parameters {
-        string(name: 'USERNAME', defaultValue: '', description: 'Username to fetch details for and apply policy')
+    environment {
+        // Define your environment variables here if needed
+        // For example, if these are sensitive data, you can use credentials binding
+        HOST_NAME = 'ServerCore'
+        CREDENTIALS_ID = 'win-ad-vm'
     }
-
-    // environment {
-    //     WINRM_HOST = '192.168.100.5'
-    //     WINRM_PORT = '5985'
-    //     WINRM_USER = 'vboxuser'
-    //     WINRM_PASSWORD = 'changeme'
-    // }
-
     stages {
-        stage('Run PowerShell Script on Windows VM') {
-           steps {
-               winRMClient {
-                          hostName('192.168.100.5')
-                          credentialsId('win-ad-vm')
-                          invokeCommand('dir')
-      }
-            
-    //         {
-    //            powershell '''
-    //                New-ADUser -Name "testuser" 3
-    //                '''   
-    // }
-}
+        stage('Setup WinRM Client') {
+            steps {
+                script {
+                    // Ensure that winRMOperations is defined
+                    def winRMOperations = [] // Initialize or obtain this list as required
+                    
+                    // Call winRMClient with required parameters
+                    winRMClient(
+                        hostName: "${env.HOST_NAME}",
+                        credentialsId: "${env.CREDENTIALS_ID}",
+                        winRMOperations: winRMOperations
+                    ) {
+                        // Define what to do within the winRMClient block
+                        echo "WinRM client setup complete"
+                    }
+                }
+            }
+        }
     }
-}
 }
