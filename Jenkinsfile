@@ -1,20 +1,20 @@
 pipeline {
     agent any
     environment {
-        HOST_NAME = 'ServerCore' // Example value, use your actual hostname
-        CREDENTIALS_ID = 'win-ad-vm' // Example value, use your actual credentials ID
+        HOST_NAME = 'ServerCore' // Replace with your actual host name
+        CREDENTIALS_ID = 'win-ad-vm' // Replace with your actual credentials ID
     }
     stages {
-        stage('Setup WinRM Client') {
+        stage('Execute PowerShell Command') {
             steps {
                 script {
-                    // Initialize winRMOperations
-                    def winRMOperations = [] // Initialize or obtain this list as required
+                    // Initialize winRMOperations if needed
+                    def winRMOperations = [] // Define your operations as required
 
-                     // Define the PowerShell command to execute
-                    def command = 'Get-ADGroup Marketing -Properties * | select name,description'
+                    // Define the PowerShell command to execute
+                    def command = 'Get-Process'
 
-                    // Call winRMClient with correct named parameters
+                    // Call the WinRM client method to execute the command
                     winRMClient(
                         hostName: "${env.HOST_NAME}",
                         credentialsId: "${env.CREDENTIALS_ID}",
@@ -30,11 +30,20 @@ pipeline {
     }
 }
 
-def winRMClient(Map params) {
+// Mock implementation of winRMClient and executePowerShellCommand for illustration purposes
+def winRMClient(Map params, Closure body) {
     def hostName = params.hostName
     def credentialsId = params.credentialsId
     def winRMOperations = params.winRMOperations
 
-    // Implement your logic here
-    echo "HostName: ${hostName}, CredentialsId: ${credentialsId}, WinRMOperations: ${winRMOperations.size()}"
+    echo "Connecting to host: ${hostName} with credentials: ${credentialsId}"
+    // Connection logic here
+    body()
+}
+
+def executePowerShellCommand(String command) {
+    echo "Executing PowerShell command: ${command}"
+    // Implementation to execute PowerShell command via WinRM
+    // For illustration, returning a mock result
+    return "Mock result of ${command}"
 }
