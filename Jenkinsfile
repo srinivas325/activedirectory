@@ -1,22 +1,33 @@
 pipeline {
     agent any
     environment {
-        HOST_NAME = 'ServerCore'
-        CREDENTIALS_ID = 'win-ad-vm'
+        HOST_NAME = 'ServerCore' // Example value, use your actual hostname
+        CREDENTIALS_ID = 'win-ad-vm' // Example value, use your actual credentials ID
     }
     stages {
         stage('Setup WinRM Client') {
             steps {
                 script {
                     // Initialize winRMOperations
-                    def winRMOperations = [] // Replace with actual operations if needed
+                    def winRMOperations = [] // Initialize or obtain this list as required
 
-                    // Call winRMClient with named parameters
-                    winRMClient hostName: "${env.HOST_NAME}", 
-                                credentialsId: "${env.CREDENTIALS_ID}", 
-                                winRMOperations: winRMOperations
+                    // Call winRMClient with correct named parameters
+                    winRMClient(
+                        hostName: "${env.HOST_NAME}",
+                        credentialsId: "${env.CREDENTIALS_ID}",
+                        winRMOperations: winRMOperations
+                    )
                 }
             }
         }
     }
+}
+
+def winRMClient(Map params) {
+    def hostName = params.hostName
+    def credentialsId = params.credentialsId
+    def winRMOperations = params.winRMOperations
+
+    // Implement your logic here
+    echo "HostName: ${hostName}, CredentialsId: ${credentialsId}, WinRMOperations: ${winRMOperations.size()}"
 }
