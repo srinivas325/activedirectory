@@ -6,16 +6,19 @@ pipeline {
             steps {
                 script {
                     // Define SSH credentials
-                    def remoteServer = [:]
-                    remoteServer.host = '192.168.100.5'
-                    remoteServer.user = 'vboxuser'
-                    remoteServer.password = 'changeme'
+                    def remote = [:]
+                    remote.name = 'ServerCore'
+                    remote.host = '192.168.100.5'
+                    remote.user = 'vboxuser'
+                    remote.password= 'changeme'
+                    remote.allowAnyHosts = true
+
                     
                     // Define SSH command to execute on Windows
-                    remoteServer.command = '''powershell.exe Get-ADUser -Identity ChewDavid -Properties *'''
+                    //remoteServer.command = '''powershell.exe Get-ADUser -Identity ChewDavid -Properties *'''
                     
                     // Execute SSH command
-                    sshCommand remote: remoteServer
+                    sshCommand remote: remote, command: "dir"
                 }
             }
         }
