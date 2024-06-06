@@ -23,7 +23,7 @@ pipeline {
 
                    // Copy the PowerShell script to the remote server using scp
                     sh """
-                        scp -o StrictHostKeyChecking=no ${localScriptPath} ${remote.user}@${remote.host}:C:/Users/vboxuser/ad-ps.ps1
+                        scp -o StrictHostKeyChecking=no ${localScriptPath} ${remote.user}@${remote.host}:C:\Users\vboxuser\ad-ps.ps1
                     """
 
                      // Verify the script is copied
