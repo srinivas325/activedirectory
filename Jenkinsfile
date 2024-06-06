@@ -13,7 +13,7 @@ pipeline {
                     
                     // Define the target Windows server SSH remote host
                     def windowsServer = [
-                        name: '192.168.100.5' // Name for reference in Jenkins configuration
+                        hostname: '192.168.100.5' // Name for reference in Jenkins configuration
                     ]
                     
                     // Execute PowerShell command on the Windows server using SSH remote host
