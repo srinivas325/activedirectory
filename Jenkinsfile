@@ -9,7 +9,7 @@ pipeline {
                     remote.name = 'ServerCore'
                     remote.host = '192.168.100.5' // Replace with your Windows server hostname or IP address
                     remote.user = 'vboxuser' // Replace with your username
-                    remote.identityFile = credentials('SSH_Credentials_ID') // Replace 'SSH_Credentials_ID' with the ID of your SSH private key credentials configured in Jenkins
+                    remote.identityFile = credentials('192.168.100.5') // Replace 'win-ad-vm' with the ID of your SSH private key credentials configured in Jenkins
                     remote.allowAnyHosts = true // Set to true to bypass host key verification
 
                     // Connect to the Windows server via SSH
