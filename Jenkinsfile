@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         stage('Connect to Windows Server') {
             steps {
@@ -11,6 +10,7 @@ pipeline {
                     remote.host = '192.168.100.5' // Replace with your Windows server hostname or IP address
                     remote.user = 'vboxuser' // Replace with your username
                     remote.identityFile = credentials('SSH_Credentials_ID') // Replace 'SSH_Credentials_ID' with the ID of your SSH private key credentials configured in Jenkins
+                    remote.allowAnyHosts = true // Set to true to bypass host key verification
 
                     // Connect to the Windows server via SSH
                     sshCommand remote: remote, command: 'echo Connected to Windows Server'
