@@ -16,9 +16,9 @@ pipeline {
         stage('Run PowerShell Script on Windows VM') {
            steps {
                winRMClient {
-        hostName('192.168.100.5')
-        credentialsId('win-ad-vm')
-        invokeCommand('dir')
+                          hostName('192.168.100.5')
+                          credentialsId('win-ad-vm')
+                          invokeCommand('dir')
       }
             
     //         {
