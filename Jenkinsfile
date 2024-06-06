@@ -12,7 +12,7 @@ pipeline {
                     def winRMOperations = [] // Initialize or obtain this list as required
 
                      // Define the PowerShell command to execute
-                    def command = 'Get-Process'
+                    def command = 'Get-ADGroup Marketing -Properties * | select name,description'
 
                     // Call winRMClient with correct named parameters
                     winRMClient(
