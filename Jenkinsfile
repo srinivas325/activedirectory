@@ -15,7 +15,9 @@ pipeline {
                     def windowsServer = [
                         host: '192.168.100.5', // IP address or hostname of the Windows server
                         user: 'vboxuser', // Username for SSH authentication
-                        privateKey: '''-----BEGIN RSA PRIVATE KEY----- 
+                        privateKey: 
+                        '''
+-----BEGIN RSA PRIVATE KEY----- 
 MIIEpAIBAAKCAQEAt4MDJGcfewZ44T9ekVEJ8P7SZTm+SxgI9TieMREs2V0zS/LS
 B5Le6Wio1cjumzFHyEq0odtn8hnvcjJWE5zxuImQyeuALyISBfT8C1I8x+6z4aUh 
 i6TvkuncyllSUOJBpLCHOCsGUnDyf3d8pasQdYGkYIJk5A74LWalHWTGUPlZDpQM
