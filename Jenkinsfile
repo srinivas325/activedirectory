@@ -1,41 +1,30 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Connect to Windows Server') {
             steps {
                 script {
-                    // Define SSH credentials
-                    def sshCredentials = [
-                        $class: 'UsernamePasswordCredentialsBinding',
-                        credentialsId: 'win-ad-vm',
-                        usernameVariable: 'SSH_USERNAME',
-                        passwordVariable: 'SSH_PASSWORD'
-                    ]
+                    // Define SSH credentials for connecting to the Windows server
+                    def remote = [:]
+                    remote.name = 'ServerCore'
+                    remote.host = '192.168.100.5' // Replace with your Windows server hostname or IP address
+                    remote.user = 'vboxuser' // Replace with your username
+                    remote.identityFile = credentials('SSH_Credentials_ID') // Replace 'SSH_Credentials_ID' with the ID of your SSH private key credentials configured in Jenkins
 
-                    // Define SSH command
-                    def sshCommand = "ssh ${sshCredentials.usernameVariable}:${sshCredentials.passwordVariable}@192.168.100.5"
-
-                    // Execute SSH command
-                    def sshResult = bat(script: sshCommand, returnStdout: true)
-
-                    // Print SSH result
-                    echo "SSH result: ${sshResult}"
+                    // Connect to the Windows server via SSH
+                    sshCommand remote: remote, command: 'echo Connected to Windows Server'
                 }
             }
         }
-        stage('Execute PowerShell Command') {
+        stage('Run PowerShell Command') {
             steps {
                 script {
-                    // Define PowerShell command
-                    def powerShellCommand = 'Your PowerShell command here'
+                    // Define PowerShell command to execute
+                    def powershellCmd = 'Get-Process'
 
-                    // Execute PowerShell command remotely via SSH
-                    def sshPowerShellCommand = "powershell.exe -command \"${powerShellCommand}\""
-                    def sshPowerShellResult = bat(script: sshPowerShellCommand, returnStdout: true)
-
-                    // Print PowerShell command result
-                    echo "PowerShell result: ${sshPowerShellResult}"
+                    // Execute PowerShell command on the Windows server via SSH
+                    sshCommand remote: remote, command: "powershell.exe -Command '${powershellCmd}'"
                 }
             }
         }
