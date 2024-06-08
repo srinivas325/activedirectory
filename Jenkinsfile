@@ -8,7 +8,7 @@ pipeline {
                     // Define SSH credentials (use Jenkins credentials ID)
                     def remote = [:]
                     remote.name = 'ServerCore'
-                    remote.host = '192.168.100.5'
+                    remote.host = 'win-ad-vm'
                     remote.user = 'vboxuser'
                     remote.password= 'changeme'
                     remote.allowAnyHosts = true
