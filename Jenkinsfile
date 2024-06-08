@@ -16,8 +16,10 @@ pipeline {
                     // Execute SSH command
                     sshCommand remote: remote, command: "dir"
                     
-                    // Use SCP to copy file without password (assumes SSH key is configured correctly)
-                    sh 'scp -i /var/lib/jenkins/.ssh/id_ed25519 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/AD-pipeline/ad-ps.ps1 vboxuser@192.168.100.5:C:/Users/vboxuser/ad-ps.ps1'
+                    // Use PSCP command to copy file to Windows
+                    sh """
+                    echo '${remotePassword}' | pscp -pw ${remotePassword} -r ${localFile} ${remoteUser}@${remoteHost}:${remotePath}
+                    """
                 }
             }
         }
