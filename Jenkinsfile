@@ -7,7 +7,6 @@ pipeline {
                 script {
                     // Define SSH credentials (use Jenkins credentials ID)
                     def remote = [:]
-                    def remote = [:]
                     remote.name = 'ServerCore'
                     remote.host = '192.168.100.5'
                     remote.user = 'vboxuser'
