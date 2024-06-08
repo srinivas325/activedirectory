@@ -2,26 +2,20 @@ pipeline {
     agent any
     
     stages {
-        stage('SSH to Windows') {
+        stage('SCP to Windows using PSCP') {
             steps {
-                script {
-                    // Define SSH credentials (use Jenkins credentials ID)
-                    def remote = [:]
-                    remote.name = 'ServerCore'
-                    remote.host = 'win-ad-vm'
-                    remote.user = 'vboxuser'
-                    remote.password= 'changeme'
-                    remote.allowAnyHosts = true
-                    def localFile = '/var/lib/jenkins/workspace/AD-pipeline/ad-ps.ps1'
-                    def remotePath = 'C:/Users/vboxuser/ad-ps.ps1'
-                    
-                    // Execute SSH command
-                    sshCommand remote: remote, command: "dir"
-                    
-                    // Use PSCP command to copy file to Windows
-                    sh """
-                    echo '${remotePassword}' | pscp -pw ${remotePassword} -r ${localFile} ${remoteUser}@${remoteHost}:${remotePath}
-                    """
+                withCredentials([usernamePassword(credentialsId: 'win-ad-vm', usernameVariable: 'REMOTE_USER', passwordVariable: 'REMOTE_PASSWORD')]) {
+                    script {
+                        // Define remote details
+                        def remoteHost = '192.168.100.5'
+                        def localFile = '/var/lib/jenkins/workspace/AD-pipeline/ad-ps.ps1'
+                        def remotePath = 'C:/Users/vboxuser/ad-ps.ps1'
+                        
+                        // Use PSCP to copy file to Windows
+                        sh """
+                        pscp -pw ${REMOTE_PASSWORD} -batch -scp ${localFile} ${REMOTE_USER}@${remoteHost}:${remotePath}
+                        """
+                    }
                 }
             }
         }
