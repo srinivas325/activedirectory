@@ -15,11 +15,11 @@ pipeline {
 
                     
                     // Define SSH command to execute on Windows
-                    //remoteServer.command = '''powershell.exe Get-ADUser -Identity ChewDavid -Properties *'''
+                    remoteServer.command = '''powershell.exe Get-ADUser -Identity ChewDavid -Properties *'''
                     
                     // Execute SSH command
                     sshCommand remote: remote, command: "dir"
-					sh 'scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/AD-pipeline/ad-ps.ps1 vboxuser@192.168.100.5:C:/Users/vboxuser/ad-ps.ps1'
+					
                 }
             }
         }
