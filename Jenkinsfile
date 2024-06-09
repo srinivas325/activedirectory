@@ -7,9 +7,9 @@ pipeline {
                 script {
                     // Define SSH credentials
                     def remote = [:]
-                    remote.name = 'ServerCore'
-                    remote.host = '192.168.100.5'
-                    remote.user = 'vboxuser'
+                    remote.name = 'ad'
+                    remote.host = '192.168.100.7'
+                    remote.user = 'win22'
                     remote.password= 'changeme'
                     remote.allowAnyHosts = true
 
