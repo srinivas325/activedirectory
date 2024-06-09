@@ -7,9 +7,8 @@ pipeline {
         SCRIPT_PATH = 'C:/Users/win22/ad-ps.ps1'  // Path to place the script on the remote server
     }
 
-    // Define the pipeline parameter
     parameters {
-        string(name: 'USERNAME', defaultValue: 'testuser', description: 'Enter the Active Directory username')
+        string(name: 'USERNAME', defaultValue: 'jdoe', description: 'Enter the Active Directory username')
     }
 
     stages {
