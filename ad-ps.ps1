@@ -1,1 +1,1 @@
-Get-ADUser -Identity ChewDavid -Properties *
+New-ADUser -Name "testuser"
