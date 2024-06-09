@@ -1,26 +1,23 @@
 pipeline {
     agent any
-    
+
+    environment {
+        SSH_CREDENTIALS_ID = 'win22-creds' // Jenkins credentials ID for SSH
+        WINDOWS_HOST = '192.168.100.7'
+        WINDOWS_USER = 'win22'
+        COMMAND_TO_RUN = 'dir C:\\' // Command to run on the Windows VM
+    }
+
     stages {
-        stage('SSH to Windows') {
+        stage('SSH to Windows VM') {
             steps {
                 script {
-                    // Define SSH credentials
-                    def remote = [:]
-                    remote.name = 'win-2022'
-                    remote.host = '192.168.100.7'
-                    remote.user = 'win22'
-                    //remote.password= 'changeme'
-                    remote.allowAnyHosts = true
-
-                    
-                    // Define SSH command to execute on Windows
-                    //remoteServer.command = '''powershell.exe Get-ADUser -Identity ChewDavid -Properties *'''
-                    
-                    // Execute SSH command
-                    sshCommand remote: remote, command: "dir"
-			//sh 'scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/AD-pipeline/ad-ps.ps1 win22@192.168.100.7:C:/Users/win22/ad-ps.ps1'
-					
+                    sshCommand remote: [ 
+                        host: env.WINDOWS_HOST, 
+                        user: env.WINDOWS_USER, 
+                        credentialsId: env.SSH_CREDENTIALS_ID 
+                    ], 
+                    command: env.COMMAND_TO_RUN
                 }
             }
         }
