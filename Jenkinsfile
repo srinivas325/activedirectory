@@ -12,12 +12,16 @@ pipeline {
         stage('SSH to Windows VM') {
             steps {
                 script {
-                    sshCommand remote: [ 
+                    // Define the remote configuration including the 'name' field
+                    def remote = [
+                        name: 'windows-vm', // A unique name for this SSH connection
                         host: env.WINDOWS_HOST, 
                         user: env.WINDOWS_USER, 
                         credentialsId: env.SSH_CREDENTIALS_ID 
-                    ], 
-                    command: env.COMMAND_TO_RUN
+                    ]
+
+                    // Execute the SSH command using the defined remote configuration
+                    sshCommand remote: remote, command: env.COMMAND_TO_RUN
                 }
             }
         }
