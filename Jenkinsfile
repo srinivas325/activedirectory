@@ -15,7 +15,7 @@ pipeline {
                 script {
                     // Define the remote configuration including the 'name' and 'knownHosts' fields
                     def remote = [
-                        name: 'windows-vm', // A unique name for this SSH connection
+                        name: '192.168.100.7', // A unique name for this SSH connection
                         host: env.WINDOWS_HOST, 
                         user: env.WINDOWS_USER, 
                         credentialsId: env.SSH_CREDENTIALS_ID,
