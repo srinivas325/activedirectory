@@ -7,7 +7,7 @@ pipeline {
                 script {
                     // Define SSH credentials
                     def remote = [:]
-                    //remote.name = 'ad'
+                    remote.name = 'win-2022'
                     remote.host = '192.168.100.7'
                     remote.user = 'win22'
                     //remote.password= 'changeme'
