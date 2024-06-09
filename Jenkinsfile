@@ -9,7 +9,7 @@ pipeline {
 
     // Define the pipeline parameter
     parameters {
-        string(name: 'USERNAME', defaultValue: 'jdoe', description: 'Enter the Active Directory username')
+        string(name: 'USERNAME', defaultValue: 'testuser', description: 'Enter the Active Directory username')
     }
 
     stages {
