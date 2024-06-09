@@ -8,7 +8,7 @@ pipeline {
     }
 
     parameters {
-        string(name: 'USERNAME', defaultValue: 'jdoe', description: 'Enter the Active Directory username')
+        string(name: 'USERNAME', defaultValue: 'johndoe', description: 'Enter the Active Directory username')
     }
 
     stages {
