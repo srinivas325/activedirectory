@@ -1,56 +1,42 @@
-param (
-    [string]$Username
-)
+pipeline {
+    agent any
 
-# Check if the Active Directory module is available
-if (-not (Get-Module -ListAvailable -Name ActiveDirectory)) {
-    Write-Error "The Active Directory module is not available on this system."
-    exit
+    environment {
+        REMOTE_SERVER = '192.168.100.7'  // IP of the remote Windows server
+        REMOTE_USER = 'win22'            // Username on the remote Windows server
+        SCRIPT_PATH = 'C:/Users/win22/ad-ps.ps1'  // Path to place the script on the remote server
+    }
+
+    parameters {
+        string(name: 'USERNAME', defaultValue: 'jdoe', description: 'Enter the Active Directory username')
+    }
+
+    stages {
+        stage('Copy PowerShell Script to Windows Server') {
+            steps {
+                script {
+                    sshagent(credentials: ['win22-creds']) {
+                        sh '''
+                            echo "Copying PowerShell script to the remote Windows server..."
+                            scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/AD-pipeline/ad-ps.ps1 ${REMOTE_USER}@${REMOTE_SERVER}:${SCRIPT_PATH}
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Execute PowerShell Script on Windows Server') {
+            steps {
+                script {
+                    sshagent(credentials: ['win22-creds']) {
+                        sh """
+                            echo "Executing PowerShell script on the remote Windows server..."
+                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} \\
+                                "powershell -File ${SCRIPT_PATH} -Username '${params.USERNAME}'"
+                        """
+                    }
+                }
+            }
+        }
+    }
 }
-
-# Import the Active Directory module
-Import-Module ActiveDirectory
-
-try {
-    # Get user details
-    $user = Get-ADUser -Identity $Username -Properties DisplayName, EmailAddress, MemberOf
-
-    if ($user -eq $null) {
-        Write-Error "User '$Username' not found in Active Directory."
-        exit
-    }
-
-    # Display user details
-    Write-Output "User Details:"
-    Write-Output "=============="
-    Write-Output "Name: $($user.DisplayName)"
-    Write-Output "Email: $($user.EmailAddress)"
-    Write-Output ""
-
-    # Get and display group membership
-    Write-Output "Groups:"
-    Write-Output "======="
-    $groups = $user.MemberOf | Get-ADGroup | Select-Object -Property Name
-    $groups | ForEach-Object { Write-Output $_.Name }
-
-    # Example policy application: Adding the user to a specific group (if not already a member)
-    $policyGroupName = "YourPolicyGroupName"  # Change this to the appropriate group name
-    $policyGroup = Get-ADGroup -Identity $policyGroupName
-
-    if ($null -eq $policyGroup) {
-        Write-Error "Policy group '$policyGroupName' not found in Active Directory."
-        exit
-    }
-
-    if ($groups.Name -notcontains $policyGroupName) {
-        Write-Output "Adding user '$Username' to the policy group '$policyGroupName'."
-        Add-ADGroupMember -Identity $policyGroupName -Members $user.SamAccountName
-        Write-Output "User added to the group successfully."
-    } else {
-        Write-Output "User '$Username' is already a member of the policy group '$policyGroupName'."
-    }
-
-} catch {
-    Write-Error "An error occurred: $_.Exception.Message"
-}
-
