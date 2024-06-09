@@ -19,7 +19,7 @@ pipeline {
                 script {
                     sshagent(credentials: ['win22-creds']) {
                         sh '''
-                            ssh -o StrictHostKeyChecking=no win22@192.168.100.7 "dir"
+                            ssh -o StrictHostKeyChecking=no win22@192.168.100.7 "powershell -File C:/Users/win22/ad-ps.ps1"
                         '''
                     }
                 }
