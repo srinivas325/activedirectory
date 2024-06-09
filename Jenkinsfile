@@ -20,6 +20,7 @@ pipeline {
                         user: env.WINDOWS_USER, 
                         credentialsId: env.SSH_CREDENTIALS_ID,
                         knownHostsFile: env.KNOWN_HOSTS_FILE // Path to known_hosts file
+                        allowAnyHosts = true 
                     ]
 
                     // Execute the SSH command using the defined remote configuration
