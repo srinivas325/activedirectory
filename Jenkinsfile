@@ -41,7 +41,7 @@ pipeline {
                         sh """
                             echo "Executing PowerShell script on the remote Windows server..."
                             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} \\
-                                "powershell -File ${SCRIPT_PATH} -UserName '${params.USERNAME}'"
+                                "powershell -File ${SCRIPT_PATH} -UserName '${params.USERNAME}' -PolicyName '${params.PolicyName}'"
                         """
                     }
                 }
