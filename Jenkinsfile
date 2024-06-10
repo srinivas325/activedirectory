@@ -9,7 +9,7 @@ pipeline {
 
     parameters {
         string(name: 'USERNAME', defaultValue: 'johndoe', description: 'Enter the Active Directory username')
-        string(name: 'GroupName', defaultValue: '', description: 'The group name to which the user will be added')
+        string(name: 'GroupName', defaultValue: 'TestGroup', description: 'The group name to which the user will be added')
     }
 
     stages {
