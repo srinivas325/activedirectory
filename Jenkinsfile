@@ -20,6 +20,7 @@ pipeline {
                     echo "GroupName: ${params.GroupName}"
                 }
             }
+        }
         stage('Copy PowerShell Script to Windows Server') {
             steps {
                 script {
@@ -47,5 +48,4 @@ pipeline {
             }
         }
     }
-}
 }
