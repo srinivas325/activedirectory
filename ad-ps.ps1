@@ -9,10 +9,6 @@ if ([string]::IsNullOrEmpty($UserName)) {
     exit 1
 }
 
-# if ([string]::IsNullOrEmpty($GroupName)) {
-#     Write-Host "Error: The 'GroupName' parameter is required and cannot be null or empty."
-#     exit 1
-# }
 
 # Debugging: Print the username and group name to verify
 Write-Host "Username: $UserName"
@@ -46,16 +42,16 @@ try {
     Write-Host $Groups -Separator ", "
     
     # Optionally: Apply a policy to the group (if you have such requirements)
-    # foreach ($Group in $Groups) {
-    #     $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
-    #     if ($Policy) {
-    #         # Add code to apply the policy to the group here
-    #         Add-ADFineGrainedPasswordPolicySubject -Identity $Policy -Subjects $GroupName
-    #         Write-Host "Policy $($Policy.Name) applied to group $GroupName."
-    #     } else {
-    #         Write-Host "No policy found for group $Group."
-    #     }
-    # }
+    foreach ($Group in $Groups) {
+        $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
+        if ($Policy) {
+            # Add code to apply the policy to the group here
+            Add-ADFineGrainedPasswordPolicySubject -Identity $Policy -Subjects $GroupName
+            Write-Host "Policy $($Policy.Name) applied to group $GroupName."
+        } else {
+            Write-Host "No policy found for group $Group."
+        }
+    }
 } catch {
     Write-Host "Error: $_"
 }
