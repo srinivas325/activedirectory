@@ -1,17 +1,23 @@
 param (
-    [string]$UserName
+    [string]$UserName,
+    [string]$PasswordPolicyName
 )
+
 $GroupName = "TestGroup"
+
 # Validate that the parameters are not null or empty
 if ([string]::IsNullOrEmpty($UserName)) {
     Write-Host "Error: The 'UserName' parameter is required and cannot be null or empty."
     exit 1
 }
 
+if ([string]::IsNullOrEmpty($PasswordPolicyName)) {
+    Write-Host "Error: The 'PasswordPolicyName' parameter is required and cannot be null or empty."
+    exit 1
+}
 
 # Debugging: Print the username and group name to verify
 Write-Host "Username: $UserName"
-# Write-Host "Group Name: $GroupName"
 
 # Import Active Directory module
 Import-Module ActiveDirectory
@@ -24,6 +30,7 @@ try {
     $User = Get-ADUser -Identity $UserName -ErrorAction Stop
     Write-Host "User found: $($User.Name)"
     Get-ADUser -Identity $UserName -Properties *
+
     # Check if the user is a member of the specified group
     $IsMember = Get-ADGroupMember -Identity $GroupName -Recursive | Where-Object {$_.SamAccountName -eq $User.SamAccountName}
 
@@ -44,53 +51,25 @@ try {
     # Create a fine-grained password policy
 
     # Create a fine-grained password policy
-$PasswordPolicy = @{
-    Name = "TestPolicy1"
-    Precedence = 1
-    ComplexityEnabled = $true
-    MinPasswordLength = 8
-    MaxPasswordAge = (New-TimeSpan -Days 90)
-}
+    $PasswordPolicy = @{
+        Name = $PasswordPolicyName
+        Precedence = 1
+        ComplexityEnabled = $true
+        MinPasswordLength = 8
+        MaxPasswordAge = (New-TimeSpan -Days 90)
+    }
 
-# Create the fine-grained password policy
-New-ADFineGrainedPasswordPolicy @PasswordPolicy
+    # Create the fine-grained password policy
+    New-ADFineGrainedPasswordPolicy @PasswordPolicy
 
-# Apply the policy to the group
-Add-ADFineGrainedPasswordPolicySubject -Identity "TestPolicy1" -Subjects $GroupName
+    # Apply the policy to the group
+    Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicyName -Subjects $GroupName
 
-# Apply the policy to the user
-Add-ADFineGrainedPasswordPolicySubject -Identity "TestPolicy1" -Subjects $UserName
+    # Apply the policy to the user
+    Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicyName -Subjects $UserName
 
-Write-Host "AD user, group, and policy applied successfully."
+    Write-Host "AD user, group, and policy applied successfully."
 
-# $PasswordPolicy = @{
-#     Name = "TestPolicy"
-#     Precedence = 1
-#     ComplexityEnabled = $true
-#     MinPasswordLength = 8
-#     MaxPasswordAge = (New-TimeSpan -Days 90)
-# }
-
-#     # Apply the policy to the group
-# Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
-# Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects $GroupName
-# Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects $UserName
-
-# Write-Host "AD user, group, and policy applied successfully."
-
-    # foreach ($Group in $Groups) {
-    #     $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
-    #     if ($Policy) {
-    #         # Add code to apply the policy to the group here
-    #         # Apply the policy to the group
-    #        Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
-    #        Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects "TestGroup"
-    #         Write-Host "Policy $($Policy.Name) applied to group $GroupName."
-    #     } else {
-    #         Write-Host "No policy found for group $Group."
-    #     }
-    # }
 } catch {
     Write-Host "Error: $_"
 }
-
