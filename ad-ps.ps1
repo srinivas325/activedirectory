@@ -1,9 +1,11 @@
 param (
-    [string]$UserName
+    [string]$UserName,
+    [string]$GroupName
 )
 
-# Debugging: Print the username to verify
+# Debugging: Print the username and group name to verify
 Write-Host "Username: $UserName"
+Write-Host "Group Name: $GroupName"
 
 # Import Active Directory module
 Import-Module ActiveDirectory
@@ -16,22 +18,33 @@ try {
     $User = Get-ADUser -Identity $UserName -ErrorAction Stop
     Write-Host "User found: $($User.Name)"
     
-    # Find the group name to which the user belongs
-    $Groups = Get-ADPrincipalGroupMembership -Identity $User | Select-Object -ExpandProperty Name
+    # Check if the user is a member of the specified group
+    $IsMember = Get-ADGroupMember -Identity $GroupName -Recursive | Where-Object {$_.SamAccountName -eq $User.SamAccountName}
 
-    # Apply a policy to the group (assuming you have a policy named "TestPolicy")
-    foreach ($Group in $Groups) {
-        $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
-        if ($Policy) {
-            # Add code to apply the policy to the group here
-            # Apply the policy to the group
-             Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
-             Add-ADFineGrainedPasswordPolicySubject -Identity $Policy -Subjects "TestGroup"
-            Write-Host "AD user, group, and policy applied successfully."
-        } else {
-            Write-Host "No policy found for group $Group."
-        }
+    if ($IsMember) {
+        Write-Host "$UserName is already a member of $GroupName."
+    } else {
+        # If the user is not a member, add them to the group
+        Add-ADGroupMember -Identity $GroupName -Members $User
+        Write-Host "$UserName has been added to $GroupName."
     }
+    
+    # Optionally: List all groups the user is a member of (for informational purposes)
+    $Groups = Get-ADPrincipalGroupMembership -Identity $User | Select-Object -ExpandProperty Name
+    Write-Host "$UserName belongs to the following groups:"
+    Write-Host $Groups -Separator ", "
+    
+    # Optionally: Apply a policy to the group (if you have such requirements)
+    # foreach ($Group in $Groups) {
+    #     $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
+    #     if ($Policy) {
+    #         # Add code to apply the policy to the group here
+    #         Add-ADFineGrainedPasswordPolicySubject -Identity $Policy -Subjects $GroupName
+    #         Write-Host "Policy $($Policy.Name) applied to group $GroupName."
+    #     } else {
+    #         Write-Host "No policy found for group $Group."
+    #     }
+    # }
 } catch {
     Write-Host "Error: $_"
 }
