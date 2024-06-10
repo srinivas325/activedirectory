@@ -23,7 +23,7 @@ Write-Host "Domain Controller: $env:USERDOMAIN"
 try {
     $User = Get-ADUser -Identity $UserName -ErrorAction Stop
     Write-Host "User found: $($User.Name)"
-    
+    Get-ADUser -Identity $UserName -Properties *
     # Check if the user is a member of the specified group
     $IsMember = Get-ADGroupMember -Identity $GroupName -Recursive | Where-Object {$_.SamAccountName -eq $User.SamAccountName}
 
@@ -41,19 +41,32 @@ try {
     Write-Host $Groups -Separator ", "
     
     # Optionally: Apply a policy to the group (if you have such requirements)
-    
-    foreach ($Group in $Groups) {
-        $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
-        if ($Policy) {
-            # Add code to apply the policy to the group here
-            # Apply the policy to the group
-           Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
-           Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects "TestGroup"
-            Write-Host "Policy $($Policy.Name) applied to group $GroupName."
-        } else {
-            Write-Host "No policy found for group $Group."
-        }
-    }
+    # Create a fine-grained password policy
+$PasswordPolicy = @{
+    Name = "TestPolicy"
+    Precedence = 1
+    ComplexityEnabled = $true
+    MinPasswordLength = 8
+    MaxPasswordAge = (New-TimeSpan -Days 90)
+}
+    # Apply the policy to the group
+Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
+Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects "TestGroup"
+
+Write-Host "AD user, group, and policy applied successfully."
+
+    # foreach ($Group in $Groups) {
+    #     $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
+    #     if ($Policy) {
+    #         # Add code to apply the policy to the group here
+    #         # Apply the policy to the group
+    #        Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
+    #        Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects "TestGroup"
+    #         Write-Host "Policy $($Policy.Name) applied to group $GroupName."
+    #     } else {
+    #         Write-Host "No policy found for group $Group."
+    #     }
+    # }
 } catch {
     Write-Host "Error: $_"
 }
