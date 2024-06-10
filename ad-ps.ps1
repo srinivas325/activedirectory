@@ -27,9 +27,11 @@ Write-Host "Domain Controller: $env:USERDOMAIN"
 
 # Try to get the user object
 try {
-    # Check if the user exists, if not, create the user
+    # Check if the user exists
     $User = Get-ADUser -Identity $UserName -ErrorAction SilentlyContinue
+
     if (!$User) {
+        # If the user doesn't exist, create the user
         Write-Host "User '$UserName' not found. Creating user..."
         New-ADUser -Name $UserName -SamAccountName $UserName -AccountPassword (ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force) -Enabled $true -ErrorAction Stop
         Write-Host "User '$UserName' created successfully."
