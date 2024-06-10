@@ -1,6 +1,6 @@
 param (
     [string]$UserName,
-    [string]$PasswordPolicyName
+    [string]$PolicyName
 )
 
 $GroupName = "TestGroup"
@@ -11,8 +11,8 @@ if ([string]::IsNullOrEmpty($UserName)) {
     exit 1
 }
 
-if ([string]::IsNullOrEmpty($PasswordPolicyName)) {
-    Write-Host "Error: The 'PasswordPolicyName' parameter is required and cannot be null or empty."
+if ([string]::IsNullOrEmpty($PolicyName)) {
+    Write-Host "Error: The 'PolicyName' parameter is required and cannot be null or empty."
     exit 1
 }
 
@@ -52,7 +52,7 @@ try {
 
     # Create a fine-grained password policy
     $PasswordPolicy = @{
-        Name = $PasswordPolicyName
+        Name = $PolicyName
         Precedence = 1
         ComplexityEnabled = $true
         MinPasswordLength = 8
@@ -63,10 +63,10 @@ try {
     New-ADFineGrainedPasswordPolicy @PasswordPolicy
 
     # Apply the policy to the group
-    Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicyName -Subjects $GroupName
+    Add-ADFineGrainedPasswordPolicySubject -Identity $PolicyName -Subjects $GroupName
 
     # Apply the policy to the user
-    Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicyName -Subjects $UserName
+    Add-ADFineGrainedPasswordPolicySubject -Identity $PolicyName -Subjects $UserName
 
     Write-Host "AD user, group, and policy applied successfully."
 
