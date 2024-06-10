@@ -45,7 +45,7 @@ try {
 
     # Create a fine-grained password policy
 $PasswordPolicy = @{
-    Name = "TestPolicy"
+    Name = "TestPolicy1"
     Precedence = 1
     ComplexityEnabled = $true
     MinPasswordLength = 8
@@ -56,10 +56,10 @@ $PasswordPolicy = @{
 New-ADFineGrainedPasswordPolicy @PasswordPolicy
 
 # Apply the policy to the group
-Add-ADFineGrainedPasswordPolicySubject -Identity "TestPolicy" -Subjects $GroupName
+Add-ADFineGrainedPasswordPolicySubject -Identity "TestPolicy1" -Subjects $GroupName
 
 # Apply the policy to the user
-Add-ADFineGrainedPasswordPolicySubject -Identity "TestPolicy" -Subjects $UserName
+Add-ADFineGrainedPasswordPolicySubject -Identity "TestPolicy1" -Subjects $UserName
 
 Write-Host "AD user, group, and policy applied successfully."
 
