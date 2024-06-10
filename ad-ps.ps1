@@ -11,10 +11,6 @@ if ([string]::IsNullOrEmpty($UserName)) {
     exit 1
 }
 
-if ([string]::IsNullOrEmpty($PolicyName)) {
-    Write-Host "Error: The 'PolicyName' parameter is required and cannot be null or empty."
-    exit 1
-}
 
 # Debugging: Print the username and group name to verify
 Write-Host "Username: $UserName"
