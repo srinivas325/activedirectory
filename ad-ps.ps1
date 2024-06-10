@@ -9,10 +9,10 @@ if ([string]::IsNullOrEmpty($UserName)) {
     exit 1
 }
 
-if ([string]::IsNullOrEmpty($GroupName)) {
-    Write-Host "Error: The 'GroupName' parameter is required and cannot be null or empty."
-    exit 1
-}
+# if ([string]::IsNullOrEmpty($GroupName)) {
+#     Write-Host "Error: The 'GroupName' parameter is required and cannot be null or empty."
+#     exit 1
+# }
 
 # Debugging: Print the username and group name to verify
 Write-Host "Username: $UserName"
