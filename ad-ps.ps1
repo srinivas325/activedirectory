@@ -42,6 +42,8 @@ try {
     
     # Optionally: Apply a policy to the group (if you have such requirements)
     # Create a fine-grained password policy
+
+    # Create a fine-grained password policy
 $PasswordPolicy = @{
     Name = "TestPolicy"
     Precedence = 1
@@ -49,12 +51,32 @@ $PasswordPolicy = @{
     MinPasswordLength = 8
     MaxPasswordAge = (New-TimeSpan -Days 90)
 }
-    # Apply the policy to the group
-Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
-Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects $GroupName
-Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects $UserName
+
+# Create the fine-grained password policy
+New-ADFineGrainedPasswordPolicy @PasswordPolicy
+
+# Apply the policy to the group
+Add-ADFineGrainedPasswordPolicySubject -Identity "TestPolicy" -Subjects $GroupName
+
+# Apply the policy to the user
+Add-ADFineGrainedPasswordPolicySubject -Identity "TestPolicy" -Subjects $UserName
 
 Write-Host "AD user, group, and policy applied successfully."
+
+# $PasswordPolicy = @{
+#     Name = "TestPolicy"
+#     Precedence = 1
+#     ComplexityEnabled = $true
+#     MinPasswordLength = 8
+#     MaxPasswordAge = (New-TimeSpan -Days 90)
+# }
+
+#     # Apply the policy to the group
+# Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
+# Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects $GroupName
+# Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects $UserName
+
+# Write-Host "AD user, group, and policy applied successfully."
 
     # foreach ($Group in $Groups) {
     #     $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
