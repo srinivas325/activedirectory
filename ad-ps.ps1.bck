@@ -11,10 +11,6 @@ if ([string]::IsNullOrEmpty($UserName)) {
     exit 1
 }
 
-if ([string]::IsNullOrEmpty($PolicyName)) {
-    Write-Host "Error: The 'PolicyName' parameter is required and cannot be null or empty."
-    exit 1
-}
 
 # Debugging: Print the username and group name to verify
 Write-Host "Username: $UserName"
@@ -27,16 +23,9 @@ Write-Host "Domain Controller: $env:USERDOMAIN"
 
 # Try to get the user object
 try {
-    # Check if the user exists, if not, create the user
-    $User = Get-ADUser -Identity $UserName -ErrorAction SilentlyContinue
-    if (!$User) {
-        Write-Host "User '$UserName' not found. Creating user..."
-        New-ADUser -Name $UserName -SamAccountName $UserName -AccountPassword (ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force) -Enabled $true -ErrorAction Stop
-        Write-Host "User '$UserName' created successfully."
-        $User = Get-ADUser -Identity $UserName -ErrorAction Stop
-    } else {
-        Write-Host "User found: $($User.Name)"
-    }
+    $User = Get-ADUser -Identity $UserName -ErrorAction Stop
+    Write-Host "User found: $($User.Name)"
+    Get-ADUser -Identity $UserName -Properties *
 
     # Check if the user is a member of the specified group
     $IsMember = Get-ADGroupMember -Identity $GroupName -Recursive | Where-Object {$_.SamAccountName -eq $User.SamAccountName}
