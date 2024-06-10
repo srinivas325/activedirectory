@@ -1,8 +1,7 @@
 param (
-    [string]$UserName,
-    [string]$GroupName
+    [string]$UserName
 )
-
+$GroupName = "TestGroup"
 # Validate that the parameters are not null or empty
 if ([string]::IsNullOrEmpty($UserName)) {
     Write-Host "Error: The 'UserName' parameter is required and cannot be null or empty."
@@ -12,7 +11,7 @@ if ([string]::IsNullOrEmpty($UserName)) {
 
 # Debugging: Print the username and group name to verify
 Write-Host "Username: $UserName"
-Write-Host "Group Name: $GroupName"
+# Write-Host "Group Name: $GroupName"
 
 # Import Active Directory module
 Import-Module ActiveDirectory
