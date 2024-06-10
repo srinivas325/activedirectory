@@ -51,7 +51,8 @@ $PasswordPolicy = @{
 }
     # Apply the policy to the group
 Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
-Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects "TestGroup"
+Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects $GroupName
+Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects $UserName
 
 Write-Host "AD user, group, and policy applied successfully."
 
