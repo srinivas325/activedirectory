@@ -11,8 +11,15 @@ pipeline {
         string(name: 'USERNAME', defaultValue: 'johndoe', description: 'Enter the Active Directory username')
         string(name: 'GroupName', defaultValue: 'TestGroup', description: 'The group name to which the user will be added')
     }
-
+   
     stages {
+        stage('Print Parameters') {
+            steps {
+                script {
+                    echo "UserName: ${params.UserName}"
+                    echo "GroupName: ${params.GroupName}"
+                }
+            }
         stage('Copy PowerShell Script to Windows Server') {
             steps {
                 script {
