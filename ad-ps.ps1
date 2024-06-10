@@ -33,7 +33,8 @@ try {
     if (!$User) {
         # If the user doesn't exist, create the user
         Write-Host "User '$UserName' not found. Creating user..."
-        New-ADUser -Name $UserName -SamAccountName $UserName -AccountPassword (ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force) -Enabled $true -ErrorAction Stop
+         # New-ADUser -Name $UserName -SamAccountName $UserName -AccountPassword (ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force) -Enabled $true -ErrorAction Stop
+        New-ADUser -Name "testuser4" -SamAccountName $UserName -UserPrincipalName "$UserName@naga.sunkara.tech" -GivenName "$UserName" -Surname "$UserName" -AccountPassword (ConvertTo-SecureString "P@ssw0rd123" -AsPlainText -Force) -Enabled $true -PassThru | Out-Null
         Write-Host "User '$UserName' created successfully."
         $User = Get-ADUser -Identity $UserName -ErrorAction Stop
     } else {
