@@ -16,19 +16,12 @@ if ([string]::IsNullOrEmpty($PolicyName)) {
     exit 1
 }
 
-# Debugging: Print the username and group name to verify
-Write-Host "Username: $UserName"
-
 # Import Active Directory module
-Import-Module ActiveDirectory
+Import-Module ActiveDirectory -ErrorAction Stop
 
-# Debugging: Print the domain controller information
-Write-Host "Domain Controller: $env:USERDOMAIN"
-
-# Try to get the user object
 try {
     # Check if the user exists
-    $User = Get-ADUser -Identity $UserName -ErrorAction SilentlyContinue
+    $User = Get-ADUser -Filter { SamAccountName -eq $UserName }
 
     if (!$User) {
         # If the user doesn't exist, create the user
@@ -42,26 +35,20 @@ try {
         }
         New-ADUser @UserParams
         Write-Host "User '$UserName' created successfully."
-        $User = Get-ADUser -Identity $UserName -ErrorAction Stop
     } else {
         Write-Host "User found: $($User.Name)"
     }
 
     # Check if the user is a member of the specified group
-    $IsMember = Get-ADGroupMember -Identity $GroupName -Recursive | Where-Object {$_.SamAccountName -eq $User.SamAccountName}
+    $IsMember = Get-ADGroupMember -Identity $GroupName -Members $UserName -ErrorAction SilentlyContinue
 
     if ($IsMember) {
         Write-Host "$UserName is already a member of $GroupName."
     } else {
         # If the user is not a member, add them to the group
-        Add-ADGroupMember -Identity $GroupName -Members $User
+        Add-ADGroupMember -Identity $GroupName -Members $UserName
         Write-Host "$UserName has been added to $GroupName."
     }
-    
-    # Optionally: List all groups the user is a member of (for informational purposes)
-    $Groups = Get-ADPrincipalGroupMembership -Identity $User | Select-Object -ExpandProperty Name
-    Write-Host "$UserName belongs to the following groups:"
-    Write-Host $Groups -Separator ", "
     
     # Optionally: Apply a policy to the group (if you have such requirements)
     # Create a fine-grained password policy
@@ -76,13 +63,13 @@ try {
     }
 
     # Create the fine-grained password policy
-    New-ADFineGrainedPasswordPolicy @PasswordPolicy
+    New-ADFineGrainedPasswordPolicy @PasswordPolicy -ErrorAction Stop
 
     # Apply the policy to the group
-    Add-ADFineGrainedPasswordPolicySubject -Identity $PolicyName -Subjects $GroupName
+    Add-ADFineGrainedPasswordPolicySubject -Identity $PolicyName -Subjects $GroupName -ErrorAction Stop
 
     # Apply the policy to the user
-    Add-ADFineGrainedPasswordPolicySubject -Identity $PolicyName -Subjects $UserName
+    Add-ADFineGrainedPasswordPolicySubject -Identity $PolicyName -Subjects $UserName -ErrorAction Stop
 
     Write-Host "AD user, group, and policy applied successfully."
 
