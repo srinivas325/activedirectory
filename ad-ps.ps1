@@ -39,16 +39,10 @@ try {
         Write-Host "User found: $($User.Name)"
     }
 
-    # Check if the user is a member of the specified group
-    $IsMember = Get-ADGroupMember -Identity $GroupName -Members $UserName -ErrorAction SilentlyContinue
+    # Add the user to the group
+    Add-ADGroupMember -Identity $GroupName -Members $UserName -ErrorAction Stop
 
-    if ($IsMember) {
-        Write-Host "$UserName is already a member of $GroupName."
-    } else {
-        # If the user is not a member, add them to the group
-        Add-ADGroupMember -Identity $GroupName -Members $UserName
-        Write-Host "$UserName has been added to $GroupName."
-    }
+    Write-Host "$UserName has been added to $GroupName."
     
     # Optionally: Apply a policy to the group (if you have such requirements)
     # Create a fine-grained password policy
