@@ -41,11 +41,14 @@ try {
     Write-Host $Groups -Separator ", "
     
     # Optionally: Apply a policy to the group (if you have such requirements)
+    
     foreach ($Group in $Groups) {
         $Policy = Get-ADFineGrainedPasswordPolicy -Filter { AppliesTo -like $Group }
         if ($Policy) {
             # Add code to apply the policy to the group here
-            Add-ADFineGrainedPasswordPolicySubject -Identity $Policy -Subjects $GroupName
+            # Apply the policy to the group
+           Get-ADFineGrainedPasswordPolicy -Identity "TestPolicy"
+           Add-ADFineGrainedPasswordPolicySubject -Identity $PasswordPolicy -Subjects "TestGroup"
             Write-Host "Policy $($Policy.Name) applied to group $GroupName."
         } else {
             Write-Host "No policy found for group $Group."
